@@ -1,6 +1,7 @@
 """
 Prospect Research Agent - Layer 1
 Integrates with existing CEP Machine prospector
+Uses Supabase for storage and Dragonfly for caching
 """
 
 import sys
@@ -14,9 +15,12 @@ from typing import Dict, Any, List
 
 # Import CEP Machine modules
 from cep_machine.layers.prospector import ProspectResearchEngine
+from cep_machine.core.supabase_db import get_database
+from cep_machine.core.cache import get_cache, cache_result, prospect_cache_key
 
+@cache_result(ttl=3600, key_prefix="prospects")
 async def search_businesses(query: str, location: str) -> List[Dict[str, Any]]:
-    """Search for businesses using CEP Machine"""
+    """Search for businesses using CEP Machine with caching"""
     engine = ProspectResearchEngine()
     
     # Use CEP's research capability
@@ -25,6 +29,11 @@ async def search_businesses(query: str, location: str) -> List[Dict[str, Any]]:
         location=location,
         limit=10
     )
+    
+    # Save to Supabase
+    db = await get_database()
+    for prospect in prospects:
+        await db.save_prospect(prospect)
     
     return [
         {

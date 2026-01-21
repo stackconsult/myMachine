@@ -238,7 +238,13 @@ CEP Machine now includes CopilotKit integration for enhanced AI agent interactio
 
 ### Quick Start with CopilotKit
 
-1. **Setup Environment**
+1. **Prerequisites**
+   - Docker (for DragonflyDB)
+   - Node.js 18+
+   - Python 3.10+
+   - Supabase account
+
+2. **Setup Environment**
 ```bash
 # Copy environment file
 cp backend/.env.example backend/.env
@@ -246,18 +252,36 @@ cp backend/.env.example backend/.env
 # Edit with your API keys
 # OPENAI_API_KEY=your-key-here
 # COPILOTKIT_API_KEY=your-key-here
+# SUPABASE_URL=your-project.supabase.co
+# SUPABASE_ANON_KEY=your-anon-key
+# SUPABASE_SERVICE_KEY=your-service-key
 ```
 
-2. **Run the Application**
+3. **Run the Application**
 ```bash
-# Start both frontend and backend
+# Start everything (including DragonflyDB)
 ./start.sh
 ```
 
-3. **Access the Interface**
+4. **Access the Interface**
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
+- Backend: http://localhost:8000
 - Health Check: http://localhost:8000/health
+
+### Architecture
+
+```
+Frontend (Next.js + CopilotKit)
+    ↓
+Backend (FastAPI + CopilotKit Runtime)
+    ↓
+┌─────────────┬──────────────┐
+│   Supabase  │ DragonflyDB  │
+│ (Database)  │   (Cache)    │
+└─────────────┴──────────────┘
+    ↓
+CEP Machine Core (Python)
+```
 
 ### CopilotKit Features
 
