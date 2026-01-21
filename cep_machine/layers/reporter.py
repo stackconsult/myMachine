@@ -13,6 +13,7 @@ Output: Performance reports with metrics and recommendations
 
 import asyncio
 import json
+import os
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass, field

@@ -81,6 +81,17 @@ class CEPContainer:
         health -= self.metrics.error_rate
         return max(0.0, min(1.0, health))
     
+    def get_metrics(self) -> Dict[str, Any]:
+        """Get container metrics and event count."""
+        return {
+            "conversion_rate": self.metrics.conversion_rate,
+            "throughput": self.metrics.throughput,
+            "efficiency": self.metrics.efficiency,
+            "error_rate": self.metrics.error_rate,
+            "events": len(self.events),
+            "last_updated": self.metrics.last_updated.isoformat(),
+        }
+    
     def to_dict(self) -> Dict[str, Any]:
         return {
             "name": self.name,

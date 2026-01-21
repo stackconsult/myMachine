@@ -13,6 +13,7 @@ Output: Optimized GBP with improved visibility
 
 import asyncio
 import json
+import os
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass, field
@@ -32,7 +33,7 @@ class GBPOptimizationType(Enum):
     PHOTO_UPLOAD = "photo_upload"
     POST_CREATION = "post_creation"
     REVIEW_RESPONSE = "review_response"
-    Q&A_MANAGEMENT = "qa_management"
+    QA_MANAGEMENT = "qa_management"
     SERVICE_UPDATE = "service_update"
     HOURS_UPDATE = "hours_update"
     WEBSITE_LINK = "website_link"
@@ -291,7 +292,7 @@ class GBPOptimizerEngine:
                 GBPOptimizationType.POST_CREATION,
                 GBPOptimizationType.PHOTO_UPLOAD,
                 GBPOptimizationType.REVIEW_RESPONSE,
-                GBPOptimizationType.Q&A_MANAGEMENT,
+                GBPOptimizationType.QA_MANAGEMENT,
             ]
         
         # Run optimizations
@@ -370,7 +371,7 @@ class GBPOptimizerEngine:
                 await self._upload_photos(optimization, business_type)
             elif opt_type == GBPOptimizationType.REVIEW_RESPONSE:
                 await self._respond_to_reviews(optimization, business_type)
-            elif opt_type == GBPOptimizationType.Q&A_MANAGEMENT:
+            elif opt_type == GBPOptimizationType.QA_MANAGEMENT:
                 await self._manage_qa(optimization, business_type)
             
             optimization.status = OptimizationStatus.COMPLETED

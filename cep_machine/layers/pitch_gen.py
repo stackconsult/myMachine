@@ -13,6 +13,7 @@ Output: Personalized pitches (email, LinkedIn, phone)
 
 import asyncio
 import json
+import os
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
