@@ -1,0 +1,100 @@
+# CEP Proprietary Machine Configuration
+# RULE: WE NEVER MAP IN TIMEFRAMES, WE MAP IN STEPS
+
+project:
+  name: "CEP Proprietary Machine"
+  version: "1.0.0"
+  description: "9-layer AI agent framework replacing $475/mo SaaS with $120/year proprietary system"
+
+# CEP Constants (Container-Event Physics)
+cep:
+  containers:
+    - name: "Sales"
+      timescale: "daily"
+      weight: 0.33
+    - name: "Operations"
+      timescale: "hourly"
+      weight: 0.34
+    - name: "Finance"
+      timescale: "weekly"
+      weight: 0.33
+  
+  coherence:
+    baseline: 0.30
+    target_phase_a: 0.65
+    target_phase_b: 0.80
+    target_final: 0.88
+    optimal: 0.95
+
+# 9 Business Layers
+layers:
+  - id: 1
+    name: "Prospect Research"
+    description: "Find dental practices with no GBP"
+    output: "prospector.py"
+  
+  - id: 2
+    name: "Pitch Generator"
+    description: "Write personalized emails referencing missing GBP features"
+    output: "pitch_gen.py"
+  
+  - id: 3
+    name: "Outreach Engine"
+    description: "Send pitches via Gmail API"
+    output: "outreach.py"
+  
+  - id: 4
+    name: "Booking Handler"
+    description: "Webhook listener for Calendly that updates CRM"
+    output: "booking_handler.py"
+  
+  - id: 5
+    name: "Onboarding Flow"
+    description: "Create Google Drive folder and Trello board for new clients"
+    output: "onboarding.py"
+  
+  - id: 6
+    name: "GBP Optimizer"
+    description: "Core service agent that posts updates to GBP"
+    output: "gbp_optimizer.py"
+  
+  - id: 7
+    name: "Reporting Engine"
+    description: "Compile GBP insights into PDF report"
+    output: "reporter.py"
+  
+  - id: 8
+    name: "Finance Tracker"
+    description: "Stripe webhook listener for MRR and Finance Container"
+    output: "finance_tracker.py"
+  
+  - id: 9
+    name: "Self-Learning"
+    description: "Loop that reads outcomes and updates prompts for Layers 1 & 2"
+    output: "feedback_loop.py"
+
+# Research Engine Config
+research:
+  search_provider: "duckduckgo"
+  max_results: 10
+  crawl_timeout: 30
+  summarize_model: "llama2"
+
+# Architecture Engine Config
+architecture:
+  llm_provider: "anthropic"
+  llm_model: "claude-3-sonnet-20240229"
+  max_tokens: 4096
+
+# Testing Engine Config
+testing:
+  browser: "chromium"
+  headless: true
+  screenshot_on_fail: true
+  timeout: 30000
+
+# Orchestrator Config
+orchestrator:
+  auto_commit: true
+  auto_pr: true
+  branch_prefix: "layer/"
