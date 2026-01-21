@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # DragonflyDB Cache
+  dragonfly:
+    image: dragonflydb/dragonfly:v1.12.0
+    container_name: cep-dragonfly-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly-data:/data
+    command: --maxmemory 1gb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cep-network
+
+  # Backend API (Development Mode)
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: cep-backend-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://dragonfly:6379
+      - PYTHONPATH=/app
+      - DEBUG=true
+    env_file:
+      - backend/.env
+    depends_on:
+      dragonfly:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./cep_machine:/app/cep_machine
+    networks:
+      - cep-network
+    command: ["python", "main.py", "--reload"]
+
+  # Frontend (Development Mode)
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: cep-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NODE_ENV=development
+    depends_on:
+      backend-dev:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - cep-network
+    command: ["npm", "run", "dev"]
+
+volumes:
+  dragonfly-data:
+    driver: local
+
+networks:
+  cep-network:
+    driver: bridge

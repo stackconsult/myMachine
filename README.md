@@ -56,13 +56,31 @@ A 9-layer AI agent framework that replaces $475/month in SaaS tools with a $120/
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Option 1: Docker (Recommended)
+
+```bash
+# Complete Docker setup
+make setup
+
+# Development mode
+make dev
+
+# Production mode  
+make prod
+```
+
+See [DOCKER.md](DOCKER.md) for complete Docker documentation.
+
+### Option 2: Local Development
+
+#### Prerequisites
 
 - Python 3.10 or higher
 - Git
 - 4GB RAM minimum
+- Docker (for DragonflyDB cache)
 
-### Installation
+#### Installation
 
 ```bash
 # Clone and setup
