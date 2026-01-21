@@ -22,6 +22,12 @@ from copilotkit import CopilotRuntime, OpenAIAdapter, AnthropicAdapter, GroqAdap
 from agents.prospect_research import create_prospect_research_agent
 from agents.pitch_generator import create_pitch_generator_agent
 from agents.outreach_engine import create_outreach_engine_agent
+from agents.booking_handler import create_booking_handler_agent
+from agents.onboarding_flow import create_onboarding_agent
+from agents.gbp_optimizer import create_gbp_optimizer_agent
+from agents.reporting_engine import create_reporting_engine_agent
+from agents.finance_tracker import create_finance_tracker_agent
+from agents.self_learning import create_self_learning_agent
 from agents.copilot_cloud_agents import (
     create_prospect_research_cloud_agent,
     create_pitch_generator_cloud_agent,
@@ -87,11 +93,24 @@ async def startup_event():
             prospect_agent = await create_prospect_research_cloud_agent()
             pitch_agent = await create_pitch_generator_cloud_agent()
             outreach_agent = await create_outreach_engine_cloud_agent()
+            # Local agents for layers 4-9 (not yet in cloud)
+            booking_agent = create_booking_handler_agent()
+            onboarding_agent = create_onboarding_agent()
+            gbp_agent = create_gbp_optimizer_agent()
+            reporting_agent = create_reporting_engine_agent()
+            finance_agent = create_finance_tracker_agent()
+            learning_agent = create_self_learning_agent()
         else:
             print("🔧 Using local agents")
             prospect_agent = create_prospect_research_agent()
             pitch_agent = create_pitch_generator_agent()
             outreach_agent = create_outreach_engine_agent()
+            booking_agent = create_booking_handler_agent()
+            onboarding_agent = create_onboarding_agent()
+            gbp_agent = create_gbp_optimizer_agent()
+            reporting_agent = create_reporting_engine_agent()
+            finance_agent = create_finance_tracker_agent()
+            learning_agent = create_self_learning_agent()
         
         # Configure CopilotKit runtime with multi-model support
         def get_model_adapter():
@@ -111,6 +130,12 @@ async def startup_event():
                 "prospect_research": prospect_agent,
                 "pitch_generator": pitch_agent,
                 "outreach_engine": outreach_agent,
+                "booking_handler": booking_agent,
+                "onboarding_flow": onboarding_agent,
+                "gbp_optimizer": gbp_agent,
+                "reporting_engine": reporting_agent,
+                "finance_tracker": finance_agent,
+                "self_learning": learning_agent,
             }
         )
         
