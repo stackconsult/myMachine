@@ -1,4 +1,4 @@
-version: '3.8'
+version: '2.2'
 
 services:
   dragonfly:
@@ -15,6 +15,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - cep-network
+
+networks:
+  cep-network:
+    driver: bridge
 
 volumes:
   dragonfly-data:
