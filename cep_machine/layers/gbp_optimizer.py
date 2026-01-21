@@ -26,6 +26,8 @@ try:
 except ImportError:
     LLM_AVAILABLE = False
 
+from cep_machine.core.cache import get_cache, gbp_cache_key, cache_result
+
 
 class GBPOptimizationType(Enum):
     """Types of GBP optimizations."""
@@ -265,6 +267,16 @@ class GBPOptimizerEngine:
         Returns:
             GBPOptimizationResult with all optimizations
         """
+        # Check cache first
+        cache = await get_cache()
+        cache_key = gbp_cache_key(client_id)
+        cached_result = await cache.get(cache_key)
+        
+        if cached_result and current_gbp_score > 80:  # Only cache if already optimized
+            print(f"[Layer 6] Cache hit for GBP optimization {client_id}")
+            # Convert cached dict back to dataclass
+            return GBPOptimizationResult(**cached_result)
+        
         start_time = datetime.now()
         
         print(f"[Layer 6] Optimizing GBP for {business_name}")
@@ -342,6 +354,9 @@ class GBPOptimizerEngine:
         print(f"  - Optimizations: {result.optimizations_completed}")
         print(f"  - Posts created: {result.posts_created}")
         print(f"  - Score improvement: +{result.score_improvement:.1f}")
+        
+        # Cache result for 30 minutes (GBP changes frequently)
+        await cache.set(cache_key, result.__dict__, ttl=1800)
         
         return result
     

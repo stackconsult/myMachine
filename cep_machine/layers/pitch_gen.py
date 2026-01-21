@@ -27,6 +27,7 @@ except ImportError:
     LLM_AVAILABLE = False
 
 from .prospector import Prospect
+from cep_machine.core.cache import get_cache, pitch_cache_key, cache_result
 
 
 class PitchChannel(Enum):
@@ -188,16 +189,26 @@ class PitchGeneratorEngine:
         tone: PitchTone = PitchTone.PROFESSIONAL,
     ) -> Pitch:
         """
-        Generate a complete pitch for a prospect.
+        Generate personalized pitch for a prospect.
         
         Args:
             prospect: Prospect data from Layer 1
-            channels: Channels to generate for (default: all)
-            tone: Tone for the pitch
+            channels: Channels to generate content for (default: all)
+            tone: Tone for the pitch content
         
         Returns:
             Complete Pitch with all channel content
         """
+        # Check cache first
+        cache = await get_cache()
+        cache_key = pitch_cache_key(prospect.id, tone.value)
+        cached_pitch = await cache.get(cache_key)
+        
+        if cached_pitch:
+            print(f"[Layer 2] Cache hit for pitch {prospect.id}")
+            # Convert cached dict back to dataclass
+            return Pitch(**cached_pitch)
+        
         channels = channels or list(PitchChannel)
         
         print(f"[Layer 2] Generating pitch for {prospect.business_name}")
@@ -231,7 +242,10 @@ class PitchGeneratorEngine:
             metadata={"tone": tone.value, "channels": [c.value for c in channels]},
         )
         
-        print(f"[Layer 2] ✓ Pitch generated (confidence: {confidence:.2f})")
+        print(f"[Layer 2] Pitch generated (confidence: {confidence:.2f})")
+        
+        # Cache pitch for 24 hours
+        await cache.set(cache_key, pitch.__dict__, ttl=86400)
         
         return pitch
     

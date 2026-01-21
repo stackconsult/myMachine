@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from duckduckgo_search import DDGS
+from cep_machine.core.cache import get_cache, prospect_cache_key, cache_result
 
 
 class ProspectScore(Enum):
@@ -204,48 +205,55 @@ class ProspectorEngine:
         self,
         location: str,
         category: str,
-        radius_km: int = 25,
+        max_prospects: Optional[int] = None,
     ) -> ProspectSearchResult:
         """
-        Research local businesses in a specific category and location.
+        Research local businesses in a specific location and category.
         
         Args:
-            location: City/area to search (e.g., "Grande Prairie, AB")
-            category: Business category (e.g., "dental", "hvac")
-            radius_km: Search radius in kilometers
+            location: City and province/state (e.g., "Toronto, Ontario")
+            category: Business category (e.g., "plumber", "restaurant")
+            max_prospects: Maximum prospects to return (default: 20)
         
         Returns:
-            ProspectSearchResult with qualified prospects
+            ProspectSearchResult with found prospects and analysis
         """
-        start_time = datetime.now()
+        # Check cache first
+        cache = await get_cache()
+        cache_key = prospect_cache_key(location, category)
+        cached_result = await cache.get(cache_key)
         
-        print(f"[Layer 1] Searching: {category} businesses in {location}")
+        if cached_result:
+            print(f"[Layer 1] Cache hit for {location} - {category}")
+            # Convert cached dict back to dataclass
+            return ProspectSearchResult(**cached_result)
         
-        # Build search query
-        query = f"{category} near {location}"
+        print(f"[Layer 1] Researching {category} businesses in {location}")
         
-        # Execute search
-        raw_results = await self._search(query)
+        self.max_results = max_prospects or self.max_results
         
-        # Process and qualify prospects
+        # Search for businesses
+        query = f"{category} businesses in {location}"
+        search_results = await self._search(query)
+        
+        # Process results
         prospects: List[Prospect] = []
+        hot_leads = 0
+        warm_leads = 0
         
-        for i, result in enumerate(raw_results):
+        for i, result in enumerate(search_results[:self.max_results]):
             prospect = await self._process_result(result, category, location, i)
             if prospect:
                 prospects.append(prospect)
+                
+                if prospect.score == ProspectScore.HOT:
+                    hot_leads += 1
+                elif prospect.score == ProspectScore.WARM:
+                    warm_leads += 1
         
-        # Sort by opportunity (lowest GBP score = highest opportunity)
-        prospects.sort(key=lambda p: p.gbp_score)
-        
-        # Count lead types
-        hot_leads = sum(1 for p in prospects if p.score == ProspectScore.HOT)
-        warm_leads = sum(1 for p in prospects if p.score == ProspectScore.WARM)
-        
-        search_time = (datetime.now() - start_time).total_seconds()
-        
+        # Create result
+        search_time = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         result = ProspectSearchResult(
-            query=query,
             location=location,
             category=category,
             prospects=prospects,
@@ -256,6 +264,9 @@ class ProspectorEngine:
         )
         
         print(f"[Layer 1] Found {len(prospects)} prospects ({hot_leads} hot, {warm_leads} warm)")
+        
+        # Cache result for 1 hour
+        await cache.set(cache_key, result.__dict__, ttl=3600)
         
         return result
     

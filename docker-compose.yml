@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # DragonflyDB - High-performance caching
+  dragonfly:
+    image: dragonflydb/dragonfly:v1.14.0
+    container_name: cep_dragonfly
+    ports:
+      - "6379:6379"
+    volumes:
+      - dragonfly_data:/data
+    command: --maxmemory 2gb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SQLite Database (existing)
+  # Note: SQLite is file-based, no container needed
+
+  # Ollama LLM Service (optional)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: cep_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    profiles:
+      - llm
+
+volumes:
+  dragonfly_data:
+    driver: local
+  ollama_data:
+    driver: local
+
+networks:
+  default:
+    name: cep_network

@@ -232,3 +232,68 @@ This project embodies disciplined execution:
 ---
 
 *Built with discipline. Mapped in steps, not timeframes.*
+## 🤖 CopilotKit Integration
+
+CEP Machine now includes CopilotKit integration for enhanced AI agent interactions.
+
+### Quick Start with CopilotKit
+
+1. **Setup Environment**
+```bash
+# Copy environment file
+cp backend/.env.example backend/.env
+
+# Edit with your API keys
+# OPENAI_API_KEY=your-key-here
+# COPILOTKIT_API_KEY=your-key-here
+```
+
+2. **Run the Application**
+```bash
+# Start both frontend and backend
+./start.sh
+```
+
+3. **Access the Interface**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- Health Check: http://localhost:8000/health
+
+### CopilotKit Features
+
+- **Real-time Chat Interface**: Interact with CEP agents through a modern chat UI
+- **Agent State Management**: Track agent progress and results in real-time
+- **Multi-Agent Coordination**: Switch between different CEP layers
+- **Dynamic UI Generation**: Agents can generate forms and dashboards on demand
+
+### Integrated Agents
+
+| Layer | Agent | Status |
+|-------|-------|--------|
+| 1 | Prospect Research | ✅ Active |
+| 2 | Pitch Generator | ✅ Active |
+| 3 | Outreach Engine | ✅ Active |
+| 4-9 | Coming Soon | 🚧 In Progress |
+
+### Architecture
+
+```
+Frontend (Next.js + CopilotKit)
+    ↓
+Backend (FastAPI + CopilotKit Runtime)
+    ↓
+CEP Machine Core (Python)
+```
+
+### Development
+
+```bash
+# Frontend development
+cd frontend && npm run dev
+
+# Backend development
+cd backend && python main.py
+
+# Run tests
+pytest tests/
+```
