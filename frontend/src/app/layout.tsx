@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <CopilotKit runtimeUrl="/api/copilotkit" agent="cep_machine">
+        <CopilotKit runtimeUrl="/api/copilotkit" agent="cep_machine" publicLicenseKey="ck_pub_91deedc157617c4705bddc7124314855">
           {children}
         </CopilotKit>
       </body>

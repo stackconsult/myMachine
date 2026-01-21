@@ -23,6 +23,8 @@ class CEPMachineMCPServer {
       }
     );
 
+    // Premium License Key for CopilotKit
+    this.licenseKey = 'ck_pub_91deedc157617c4705bddc7124314855';
     this.setupToolHandlers();
   }
 
