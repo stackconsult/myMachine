@@ -1,0 +1,1 @@
+{"python_version": "3.12", "dockerfile_lines": [], "dependencies": ["."], "package_manager": "pip", "graphs": {"cep_machine": "./cep_deep_agent.py:cep_agent"}, "env": ".env"}

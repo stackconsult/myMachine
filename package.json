@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@copilotkit/runtime": "^1.51.2"
+  }
+}
