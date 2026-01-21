@@ -42,3 +42,182 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Node.js (Frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+
+# Next.js
+.next/
+out/
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Supabase (will replace this file when connected)
+# NOTE: Supabase is connected in IDE for memory/context control and skills
+# When Supabase is installed, it will replace this .gitignore file
+
+# ==========================================
+# MYMACHINE PROJECT - COMPLETE IMPLEMENTATION
+# ==========================================
+
+# WORK COMPLETED (Jan 21, 2026):
+# 
+# 1. COPILOTKIT CLOUD INTEGRATION
+#    - Created copilot_cloud_agents.py with pre-built Deep Agents
+#    - Integrated cloud agents with local fallback
+#    - Multi-model adapter support (OpenAI, Anthropic, Groq)
+#
+# 2. MISSING COPILOTKIT HOOKS
+#    - use-frontend-tools.ts: Tool hooks for prospect, pitch, outreach, reporting
+#    - use-human-in-loop.ts: HITL for bookings, credit decisions, content reviews
+#    - use-render-tool-calls.ts: Dynamic UI, dashboards, forms, charts, tables
+#
+# 3. AG-UI PROTOCOL
+#    - agui-protocol.ts: Bidirectional state sharing
+#    - WebSocket communication
+#    - Component factory and state manager
+#
+# 4. MULTI-MODEL SUPPORT
+#    - model-selector.tsx: Model configuration UI
+#    - api/model_config.py: Backend model switching
+#    - Support for OpenAI, Anthropic, Groq, Local models
+#
+# 5. SUPABASE REAL-TIME INTEGRATION
+#    - use-supabase-realtime.ts: Real-time hooks
+#    - api/websocket.py: WebSocket endpoint
+#    - Integration with CopilotKit
+#
+# 6. A2UI COMPOSER INTEGRATION
+#    - a2ui-composer.tsx: Visual A2UI editor
+#    - api/a2ui_generator.py: Backend generation
+#    - Template library and validation
+#
+# ==========================================
+# NEXT BUILD STEPS:
+# ==========================================
+#
+# STEP 1: Install Dependencies
+#   cd frontend && npm install
+#   cd ../backend && pip install -r requirements.txt
+#
+# STEP 2: Configure Environment
+#   cp backend/.env.example backend/.env
+#   # Add your API keys to .env
+#
+# STEP 3: Start DragonflyDB
+#   docker-compose up -d
+#
+# STEP 4: Initialize Supabase
+#   # Create tables: prospects, pitches, outreach, agent_status, metrics, coherence_metrics
+#   # Set up real-time subscriptions
+#
+# STEP 5: Run Application
+#   ./start.sh
+#   # Or manually:
+#   # Terminal 1: cd backend && python main.py
+#   # Terminal 2: cd frontend && npm run dev
+#
+# STEP 6: Test Integration
+#   # Open http://localhost:3000
+#   # Test CopilotKit sidebar
+#   # Verify real-time updates
+#
+# STEP 7: Configure CopilotKit Cloud (Optional)
+#   # Add COPILOTKIT_API_KEY to .env
+#   # Set USE_CLOUD_AGENTS=true
+#
+# STEP 8: Deploy to Production
+#   # Build frontend: npm run build
+#   # Deploy backend: uvicorn main:app --host 0.0.0.0 --port 8000
+#
+# ==========================================
+# ARCHITECTURE OVERVIEW:
+# ==========================================
+#
+# FRONTEND (/frontend)
+# - Next.js 14 with TypeScript
+# - CopilotKit integration (sidebar, chat, hooks)
+# - TailwindCSS for styling
+# - Real-time Supabase subscriptions
+#
+# BACKEND (/backend)
+# - FastAPI with Python 3.10+
+# - CopilotKit runtime with agents
+# - Supabase PostgreSQL adapter
+# - DragonflyDB caching layer
+# - WebSocket support for real-time
+#
+# AGENTS (/backend/agents)
+# - prospect_research.py: Layer 1 agent
+# - pitch_generator.py: Layer 2 agent
+# - outreach_engine.py: Layer 3 agent
+# - copilot_cloud_agents.py: Cloud integration
+#
+# API ENDPOINTS
+# - /api/copilotkit: CopilotKit runtime
+# - /api/config/model: Model configuration
+# - /api/a2ui: A2UI generation
+# - /ws: WebSocket for real-time
+#
+# ==========================================
+# ENVIRONMENT VARIABLES REQUIRED:
+# ==========================================
+#
+# OPENAI_API_KEY=your-openai-key
+# COPILOTKIT_API_KEY=your-copilotkit-key
+# SUPABASE_URL=your-supabase-url
+# SUPABASE_ANON_KEY=your-supabase-anon-key
+# SUPABASE_SERVICE_KEY=your-supabase-service-key
+# CACHE_HOST=localhost
+# CACHE_PORT=6379
+# MODEL_PROVIDER=openai
+# USE_CLOUD_AGENTS=true
+#
+# ==========================================
+# TESTING COMMANDS:
+# ==========================================
+#
+# Test agents:
+#   python test_copilotkit.py
+#
+# Test database:
+#   python -c "from cep_machine.core.supabase_db import get_database; print('DB OK')"
+#
+# Test cache:
+#   python -c "from cep_machine.core.cache import get_cache; print('Cache OK')"
+#
+# Test WebSocket:
+#   wscat -c ws://localhost:8000/ws/test-client
+#
+# ==========================================
+# PRODUCTION CHECKLIST:
+# ==========================================
+#
+# [ ] All API keys configured
+# [ ] Supabase tables created
+# [ ] DragonflyDB running
+# [ ] HTTPS certificates
+# [ ] Domain configured
+# [ ] Monitoring setup
+# [ ] Backup strategy
+# [ ] Rate limiting enabled
+# [ ] Security headers configured
+#
+# ==========================================
+# NOTES:
+# ==========================================
+#
+# - This file will be replaced by Supabase when connected
+# - Supabase provides memory/context control and skills
+# - Current implementation uses local Supabase for development
+# - Cloud deployment requires managed services
+#
+# LAST UPDATED: Jan 21, 2026
+# PROJECT STATUS: Ready for build and deployment
