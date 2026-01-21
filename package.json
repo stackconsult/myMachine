@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@copilotkit/runtime": "^1.51.2"
+    "@copilotkit/runtime": "^1.51.2",
+    "@modelcontextprotocol/sdk": "^1.25.3"
   }
 }
