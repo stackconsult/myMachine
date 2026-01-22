@@ -1,0 +1,240 @@
+groups:
+  - name: cep_machine_critical
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status_code=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+          runbook_url: "https://docs.cep-machine.io/runbooks/high-error-rate"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} has been down for more than 1 minute"
+          runbook_url: "https://docs.cep-machine.io/runbooks/service-down"
+
+      - alert: DatabaseConnectionPoolExhaustion
+        expr: db_pool_connections_used / db_pool_connections_max > 0.9
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "{{ $value | humanizePercentage }} of database connections in use"
+          runbook_url: "https://docs.cep-machine.io/runbooks/db-pool-exhaustion"
+
+      - alert: HighMemoryUsage
+        expr: (memory_usage_bytes / memory_total_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is at {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.cep-machine.io/runbooks/high-memory"
+
+      - alert: HighCPUUsage
+        expr: cpu_usage_percent > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is at {{ $value }}%"
+          runbook_url: "https://docs.cep-machine.io/runbooks/high-cpu"
+
+  - name: cep_machine_warning
+    rules:
+      - alert: SlowResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow response time detected"
+          description: "95th percentile response time is {{ $value }}s"
+          runbook_url: "https://docs.cep-machine.io/runbooks/slow-response"
+
+      - alert: ToolExecutionFailure
+        expr: rate(tool_executions_total{status="error"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High tool execution failure rate"
+          description: "Tool execution failure rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.cep-machine.io/runbooks/tool-failure"
+
+      - alert: AgentInvocationFailure
+        expr: rate(agent_invocations_total{status="error"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High agent invocation failure rate"
+          description: "Agent invocation failure rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.cep-machine.io/runbooks/agent-failure"
+
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency detected"
+          description: "99th percentile latency is {{ $value }}s"
+          runbook_url: "https://docs.cep-machine.io/runbooks/high-latency"
+
+      - alert: RedisConnectionFailure
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis connection failure"
+          description: "Unable to connect to Redis"
+          runbook_url: "https://docs.cep-machine.io/runbooks/redis-failure"
+
+      - alert: HighRedisMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is at {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.cep-machine.io/runbooks/redis-memory"
+
+      - alert: DatabaseSlowQueries
+        expr: rate(db_slow_queries_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate of slow database queries"
+          description: "{{ $value }} slow queries per second"
+          runbook_url: "https://docs.cep-machine.io/runbooks/slow-queries"
+
+      - alert: HighDiskUsage
+        expr: (disk_used_bytes / disk_total_bytes) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage detected"
+          description: "Disk usage is at {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.cep-machine.io/runbooks/high-disk"
+
+  - name: cep_machine_info
+    rules:
+      - alert: NewDeployment
+        expr: changes(process_start_time_seconds[5m]) > 0
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "New deployment detected"
+          description: "Service {{ $labels.job }} has been restarted"
+
+      - alert: HighTrafficSpike
+        expr: rate(http_requests_total[1m]) > 2 * rate(http_requests_total[1h])
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Traffic spike detected"
+          description: "Current traffic is {{ $value | humanize }} times higher than average"
+
+      - alert: LowCacheHitRate
+        expr: rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.5
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low cache hit rate"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}"
+
+  - name: cep_machine_business
+    rules:
+      - alert: LowProspectConversionRate
+        expr: rate(prospects_converted_total[24h]) / rate(prospects_created_total[24h]) < 0.1
+        for: 1h
+        labels:
+          severity: warning
+          team: sales
+        annotations:
+          summary: "Low prospect conversion rate"
+          description: "Conversion rate is {{ $value | humanizePercentage }} over the last 24 hours"
+
+      - alert: HighOutreachFailureRate
+        expr: rate(outreach_failed_total[1h]) / rate(outreach_sent_total[1h]) > 0.2
+        for: 30m
+        labels:
+          severity: warning
+          team: sales
+        annotations:
+          summary: "High outreach failure rate"
+          description: "{{ $value | humanizePercentage }} of outreach messages are failing"
+
+      - alert: NoProspectsGenerated
+        expr: rate(prospects_created_total[1h]) == 0
+        for: 2h
+        labels:
+          severity: warning
+          team: sales
+        annotations:
+          summary: "No new prospects generated"
+          description: "No new prospects have been generated in the last 2 hours"
+
+      - alert: PitchGenerationFailure
+        expr: rate(pitch_generation_failed_total[1h]) / rate(pitch_generation_total[1h]) > 0.1
+        for: 30m
+        labels:
+          severity: warning
+          team: sales
+        annotations:
+          summary: "High pitch generation failure rate"
+          description: "{{ $value | humanizePercentage }} of pitch generations are failing"
+
+  - name: cep_machine_security
+    rules:
+      - alert: HighAuthenticationFailures
+        expr: rate(authentication_failures_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second"
+          runbook_url: "https://docs.cep-machine.io/runbooks/auth-failures"
+
+      - alert: SuspiciousRateLimitHits
+        expr: rate(rate_limit_exceeded_total[5m]) > 50
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "High rate limit violations"
+          description: "{{ $value }} rate limit violations per second"
+          runbook_url: "https://docs.cep-machine.io/runbooks/rate-limit"
+
+      - alert: UnauthorizedAccessAttempts
+        expr: rate(unauthorized_access_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "High unauthorized access attempts"
+          description: "{{ $value }} unauthorized access attempts per second"
+          runbook_url: "https://docs.cep-machine.io/runbooks/unauthorized-access"
