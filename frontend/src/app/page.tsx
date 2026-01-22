@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AgenticChatInterface } from "@/components/AgenticChatInterface";
 import { Brain, Sparkles, Tool, BarChart3, Users, Mail, Target, Calendar, Settings, TrendingUp } from "lucide-react";
 
 export default function HomePage() {
@@ -22,8 +21,18 @@ export default function HomePage() {
   if (activeView === "chat") {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="flex-1">
-          <AgenticChatInterface className="h-full" />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <Sparkles className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">AI Assistant</h2>
+            <p className="text-gray-600 mb-4">Chat interface coming soon</p>
+            <button
+              onClick={() => setActiveView("dashboard")}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Back to Dashboard
+            </button>
+          </div>
         </div>
       </div>
     );

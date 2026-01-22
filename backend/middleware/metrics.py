@@ -6,8 +6,6 @@ Production-ready monitoring and observability
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
-from prometheus_client.middleware import PrometheusMiddleware
-from prometheus_client.exposition import MetricsHandler
 import time
 import logging
 from typing import Callable

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 import uvicorn
 import json
 import sys
@@ -23,7 +24,16 @@ except ImportError:
     AGENTS_AVAILABLE = False
     print("Warning: langgraph_agents module not found, using fallback implementation")
 
-app = FastAPI(title="CEP Machine Backend", version="1.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager"""
+    # Startup
+    asyncio.create_task(metrics_collection_task())
+    yield
+    # Shutdown
+    pass
+
+app = FastAPI(title="CEP Machine Backend", version="1.0.0", lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
@@ -40,12 +50,6 @@ app.include_router(api_router, prefix="/api")
 # Setup metrics
 app.add_middleware(MetricsMiddleware)
 setup_metrics_endpoint(app)
-
-# Start metrics collection task
-@app.on_event("startup")
-async def startup_event():
-    """Startup event handler"""
-    asyncio.create_task(metrics_collection_task())
 
 # CopilotKit runtime endpoints - PRODUCTION AGENTS INTEGRATION
 @app.post("/api/copilotkit")

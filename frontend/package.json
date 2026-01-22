@@ -9,10 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@copilotkit/react-core": "^1.51.2",
-    "@copilotkit/react-ui": "^1.51.2",
-    "@copilotkit/runtime": "^1.51.2",
-    "@copilotkit/nextjs": "^1.51.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -40,7 +36,6 @@
   },
   "devDependencies": {
     "eslint": "^8",
-    "eslint-config-next": "14.0.0",
-    "@types/web-speech-api": "^0.0.29"
+    "eslint-config-next": "14.0.0"
   }
 }

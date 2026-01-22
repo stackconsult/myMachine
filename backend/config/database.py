@@ -35,11 +35,7 @@ def get_database_url() -> str:
 # Create engine with connection pooling
 engine = create_async_engine(
     get_database_url(),
-    poolclass=QueuePool,
-    pool_size=20,
-    max_overflow=30,
-    pool_pre_ping=True,
-    pool_recycle=3600,
+    poolclass=None,  # Disable QueuePool for async engine
     echo=os.getenv("DB_ECHO", "false").lower() == "true"
 )
 
@@ -100,10 +96,10 @@ class DatabaseHealth:
         """Get connection pool status"""
         pool = engine.pool
         return {
-            "pool_size": pool.size(),
-            "checked_in": pool.checkedin(),
-            "checked_out": pool.checkedout(),
-            "overflow": pool.overflow(),
+            "pool_size": pool.size() if hasattr(pool, 'size') else 0,
+            "checked_in": pool.checkedin() if hasattr(pool, 'checkedin') else 0,
+            "checked_out": pool.checkedout() if hasattr(pool, 'checkedout') else 0,
+            "overflow": pool.overflow() if hasattr(pool, 'overflow') else 0,
             "invalid": pool.invalidatedcount() if hasattr(pool, 'invalidatedcount') else 0
         }
 
