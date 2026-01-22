@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { useCopilotChat } from "@copilotkit/react-core";
 import { CopilotChat } from "@copilotkit/react-ui";
-import { Message, CopilotKitProps } from "@copilotkit/react-ui";
 import { Bot, User, Wrench, Sparkles, Brain } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -51,12 +50,6 @@ export function AgenticChatInterface({
   const [isExecutingTool, setIsExecutingTool] = useState(false);
   
   const {
-    messages,
-    setMessages,
-    appendMessage,
-    deleteMessage,
-    reloadMessages,
-    stopGeneration,
     isLoading,
   } = useCopilotChat();
 
@@ -65,12 +58,14 @@ export function AgenticChatInterface({
     const capability = capabilities.find(c => c.name === capabilityName);
     if (capability) {
       const prompt = `I want to use ${capability.name} capabilities. ${capability.description}. What can you help me with?`;
-      appendMessage({
-        role: "user",
-        content: prompt,
-      });
+      // Use the chat interface to send message
+      const inputElement = document.querySelector('textarea[placeholder*="Describe"]') as HTMLTextAreaElement;
+      if (inputElement) {
+        inputElement.value = prompt;
+        inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+      }
     }
-  }, [capabilities, appendMessage]);
+  }, [capabilities]);
 
   const customInstructions = `
     You are an advanced AI assistant with access to specialized business automation agents.
@@ -89,45 +84,6 @@ export function AgenticChatInterface({
     5. Maintain context across conversations
     6. Be proactive in suggesting relevant capabilities
   `;
-
-  const renderMessage = (message: Message, index: number) => {
-    const isUser = message.role === "user";
-    const isToolExecution = message.content?.includes("tool") || message.content?.includes("executing");
-    
-    return (
-      <motion.div
-        key={index}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className={cn(
-          "flex gap-3 p-4 rounded-lg",
-          isUser ? "bg-blue-50 ml-auto max-w-[80%]" : "bg-gray-50 mr-auto max-w-[80%]"
-        )}
-      >
-        <div className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-          isUser ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-600"
-        )}>
-          {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-        </div>
-        <div className="flex-1">
-          <div className="text-sm font-medium mb-1">
-            {isUser ? "You" : "AI Assistant"}
-          </div>
-          <div className="text-sm whitespace-pre-wrap">
-            {message.content}
-          </div>
-          {isToolExecution && (
-            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-              <Wrench className="w-3 h-3 inline mr-1" />
-              Executing tool...
-            </div>
-          )}
-        </div>
-      </motion.div>
-    );
-  };
 
   return (
     <div className={cn("flex flex-col h-full", className)}>
@@ -167,34 +123,9 @@ export function AgenticChatInterface({
             placeholder: "Describe what you'd like to accomplish...",
           }}
           className="flex-1"
-          renderMessage={renderMessage}
-          onMessageSubmit={(message) => {
-            console.log("Message submitted:", message);
-          }}
           onGenerationStop={() => {
             setIsExecutingTool(false);
           }}
-          onMessageReload={() => {
-            console.log("Messages reloaded");
-          }}
-          onMessageCopy={(message) => {
-            console.log("Message copied:", message);
-          }}
-          onThumbsUp={(message) => {
-            console.log("Thumbs up:", message);
-          }}
-          onThumbsDown={(message) => {
-            console.log("Thumbs down:", message);
-          }}
-          suggestions={[
-            "Find prospects in New York for restaurants",
-            "Generate a pitch for a dental clinic",
-            "Analyze performance for last month",
-            "Track a new financial transaction",
-            "Optimize Google Business Profile",
-          ]}
-          autoSuggestions={true}
-          enableImageUpload={false}
         />
       </div>
 
