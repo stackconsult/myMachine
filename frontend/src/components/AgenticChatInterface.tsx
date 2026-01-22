@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useCopilotChat } from "@copilotkit/react-core";
 import { CopilotChat } from "@copilotkit/react-ui";
 import { Message, CopilotKitProps } from "@copilotkit/react-ui";
-import { Bot, User, Tool, Sparkles, Brain } from "lucide-react";
+import { Bot, User, Wrench, Sparkles, Brain } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -37,7 +37,7 @@ const AGENT_CAPABILITIES: AgentCapability[] = [
   {
     name: "Finance Tracking",
     description: "Transaction monitoring, financial analytics",
-    icon: <Tool className="w-4 h-4" />,
+    icon: <Wrench className="w-4 h-4" />,
     tools: ["track_finances"]
   }
 ];
@@ -120,7 +120,7 @@ export function AgenticChatInterface({
           </div>
           {isToolExecution && (
             <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-              <Tool className="w-3 h-3 inline mr-1" />
+              <Wrench className="w-3 h-3 inline mr-1" />
               Executing tool...
             </div>
           )}

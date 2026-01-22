@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AgenticChatInterface } from "@/components/AgenticChatInterface";
-import { Brain, Sparkles, Tool, BarChart3, Users, Mail, Target, Calendar, Settings, TrendingUp } from "lucide-react";
+import { Brain, Sparkles, Wrench, BarChart3, Users, Mail, Target, Calendar, Settings, TrendingUp } from "lucide-react";
 
 export default function HomePage() {
   const [activeView, setActiveView] = useState<"dashboard" | "chat">("dashboard");
@@ -15,7 +15,7 @@ export default function HomePage() {
     { id: "5", name: "Onboarding Flow", desc: "Automated client setup", icon: <Settings className="w-5 h-5" /> },
     { id: "6", name: "GBP Optimizer", desc: "Google Business Profile automation", icon: <BarChart3 className="w-5 h-5" /> },
     { id: "7", name: "Reporting Engine", desc: "Performance analytics with AI", icon: <TrendingUp className="w-5 h-5" /> },
-    { id: "8", name: "Finance Tracker", desc: "Revenue and expense tracking", icon: <Tool className="w-5 h-5" /> },
+    { id: "8", name: "Finance Tracker", desc: "Revenue and expense tracking", icon: <Wrench className="w-5 h-5" /> },
     { id: "9", name: "Self-Learning", desc: "Feedback loop for improvement", icon: <Brain className="w-5 h-5" /> },
   ];
 
