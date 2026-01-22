@@ -123,9 +123,6 @@ export function AgenticChatInterface({
             placeholder: "Describe what you'd like to accomplish...",
           }}
           className="flex-1"
-          onGenerationStop={() => {
-            setIsExecutingTool(false);
-          }}
         />
       </div>
 
