@@ -5,16 +5,23 @@ import uvicorn
 import json
 import sys
 import os
+import asyncio
 
 # Add the parent directory to the path to import cep_agents
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Import API router
+from api.main import api_router
+
+# Import metrics
+from middleware.metrics import MetricsMiddleware, setup_metrics_endpoint, metrics_collection_task
+
 try:
-    from cep_agents_production import AGENTS, get_agent, list_agents
+    from agents.langgraph_agents import AGENTS, get_agent, list_agents
     AGENTS_AVAILABLE = True
 except ImportError:
     AGENTS_AVAILABLE = False
-    print("Warning: cep_agents_production module not found, using fallback implementation")
+    print("Warning: langgraph_agents module not found, using fallback implementation")
 
 app = FastAPI(title="CEP Machine Backend", version="1.0.0")
 
@@ -26,6 +33,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include API router
+app.include_router(api_router, prefix="/api")
+
+# Setup metrics
+app.add_middleware(MetricsMiddleware)
+setup_metrics_endpoint(app)
+
+# Start metrics collection task
+@app.on_event("startup")
+async def startup_event():
+    """Startup event handler"""
+    asyncio.create_task(metrics_collection_task())
 
 # CopilotKit runtime endpoints - PRODUCTION AGENTS INTEGRATION
 @app.post("/api/copilotkit")
@@ -67,9 +87,19 @@ async def copilotkit_runtime(request: dict = None):
                         agent_name = "performance_analyzer"
                     
                     if agent_name and agent_name in AGENTS:
-                        # Use the production agent
+                        # Use the production LangGraph agent
                         agent = AGENTS[agent_name]
-                        response = f"I'm the {agent.name} agent. {agent.description}. I can help you with specialized tools for this domain. What specific task would you like me to handle?"
+                        agent_result = agent.invoke(messages)
+                        
+                        # Extract the last AI message from the agent result
+                        if agent_result and "messages" in agent_result:
+                            ai_messages = [msg for msg in agent_result["messages"] if msg.type == "ai"]
+                            if ai_messages:
+                                response = ai_messages[-1].content
+                            else:
+                                response = f"I'm the {agent.name} agent. {agent.description}. I can help you with specialized tools for this domain."
+                        else:
+                            response = f"I'm the {agent.name} agent. {agent.description}. I can help you with specialized tools for this domain."
                     else:
                         # Fallback to general response
                         response = f"I'm the CEP Machine assistant with PREMIUM features enabled. I have access to specialized agents: {', '.join(list_agents())}. Each agent has specific tools and capabilities. What would you like to work on?"
